@@ -1,89 +1,293 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
-<title>Writing Practice - Volleyball</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>排球單詞書寫練習</title>
 <style>
-body { font-family: Arial, sans-serif; background: linear-gradient(to bottom, #a8e6cf, #dcedc1); text-align:center; padding:30px; margin: 0; min-height: 100vh; }
-.container { max-width:700px; margin:auto; background:#ffffffee; padding:25px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-h1 { margin-top: 0; color: #333; }
-.word { font-size:50px; font-weight:bold; color: #333; margin: 10px 0; }
-.trace-area { position:relative; width:420px; height:100px; margin:30px auto; background: #fff; border-radius: 10px; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); }
-.trace-guide { position:absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:56px; font-weight:bold; letter-spacing:6px; color:transparent; -webkit-text-stroke:2px #999; }
-#traceCanvas { position:absolute; top:0; left:0; width:420px; height:100px; z-index:2; border:1px dashed #ccc; border-radius: 10px; cursor: crosshair; }
-.image-box img { max-width: 200px; max-height: 200px; border-radius:12px; margin-top:10px; object-fit: cover; }
-button { padding:12px 20px; margin:10px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; font-size: 16px; transition: 0.2s; }
-button:active { transform: scale(0.95); }
-.check-btn { background:#4CAF50;color:white; }
-.clear-btn { background:#E74C3C;color:white; }
-.result { font-size:28px; margin-top:15px; height: 35px; font-weight: bold;}
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(to bottom right, #e8f5e9, #c8e6c9);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        margin: 0;
+        min-height: 100vh;
+        color: #333;
+    }
+
+    .container {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        text-align: center;
+        max-width: 600px;
+        width: 100%;
+    }
+
+    h1 {
+        color: #2e7d32;
+        margin-top: 0;
+        margin-bottom: 20px;
+        font-size: 28px;
+    }
+
+    .image-box {
+        margin-bottom: 20px;
+    }
+
+    .image-box img {
+        width: 100%;
+        max-width: 300px;
+        height: auto;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        object-fit: cover;
+    }
+
+    .word-display {
+        font-size: 40px; /* 稍微縮小字體以適應較長的單詞 */
+        font-weight: 900;
+        letter-spacing: 3px;
+        color: #1b5e20;
+        margin-bottom: 30px;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .trace-area {
+        position: relative;
+        width: 100%;
+        max-width: 500px;
+        height: 120px;
+        margin: 0 auto 30px;
+        background-color: #fafafa;
+        border: 2px dashed #a5d6a7;
+        border-radius: 15px;
+        overflow: hidden;
+        touch-action: none;
+    }
+
+    .trace-guide {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 50px; /* 稍微縮小以適應長單字 */
+        font-weight: 900;
+        letter-spacing: 5px;
+        color: transparent;
+        -webkit-text-stroke: 2px #e0e0e0;
+        user-select: none;
+        pointer-events: none;
+    }
+
+    #traceCanvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        cursor: crosshair;
+    }
+
+    .controls {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    button {
+        padding: 12px 25px;
+        font-size: 18px;
+        font-weight: bold;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    button:active {
+        transform: translateY(2px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .clear-btn {
+        background-color: #ff5252;
+        color: white;
+    }
+
+    .clear-btn:hover {
+        background-color: #ff1744;
+    }
+
+    .check-btn {
+        background-color: #4caf50;
+        color: white;
+    }
+
+    .check-btn:hover {
+        background-color: #43a047;
+    }
+
+    #resultMessage {
+        margin-top: 25px;
+        font-size: 24px;
+        font-weight: bold;
+        min-height: 35px;
+    }
+
+    .success { color: #2e7d32; }
+    .error { color: #d32f2f; }
 </style>
 </head>
 <body>
+
 <div class="container">
-    <h1>Writing Practice 🏐</h1>
-    <div class="word">VOLLEYBALL</div>
+    <h1>排球單詞書寫練習 🏐</h1>
     
     <div class="image-box">
         <img src="volleyball.jpg" alt="Volleyball">
     </div>
 
+    <div class="word-display">VOLLEYBALL</div>
+
     <div class="trace-area">
-        <div class="trace-guide">VOLLEYBALL</div>
-        <canvas id="traceCanvas" width="420" height="100"></canvas>
+        <div class="trace-guide" id="guideText">VOLLEYBALL</div>
+        <canvas id="traceCanvas"></canvas>
     </div>
-    
-    <button class="check-btn" onclick="checkWriting()">✔ Check</button>
-    <button class="clear-btn" onclick="clearCanvas()">✖ Clear</button>
-    
-    <div id="result" class="result"></div>
+
+    <div class="controls">
+        <button class="clear-btn" onclick="clearCanvas()">✖ 清除</button>
+        <button class="check-btn" onclick="checkWriting()">✔ 檢查</button>
+    </div>
+
+    <div id="resultMessage"></div>
 </div>
 
 <script>
     const canvas = document.getElementById("traceCanvas");
     const ctx = canvas.getContext("2d");
-    let drawing=false, totalLength=0, lastX=0, lastY=0;
-    ctx.lineWidth=4; ctx.lineCap="round"; ctx.strokeStyle="#333";
+    const resultMessage = document.getElementById("resultMessage");
     
-    function drawLine(x,y){ 
-        let dx = x - lastX; 
-        let dy = y - lastY; 
-        totalLength += Math.sqrt(dx*dx + dy*dy); 
-        ctx.lineTo(x,y); 
-        ctx.stroke(); 
-        lastX = x; 
-        lastY = y; 
+    let isDrawing = false;
+    let totalDrawnLength = 0;
+    let lastX = 0;
+    let lastY = 0;
+
+    function resizeCanvas() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        ctx.lineWidth = 6;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.strokeStyle = "#424242";
     }
-    
-    canvas.addEventListener("mousedown", e=>{ drawing=true; lastX=e.offsetX; lastY=e.offsetY; ctx.beginPath(); ctx.moveTo(lastX,lastY); });
-    canvas.addEventListener("mousemove", e=>{ if(drawing) drawLine(e.offsetX,e.offsetY); });
-    canvas.addEventListener("mouseup", () => drawing=false);
-    canvas.addEventListener("mouseleave", () => drawing=false);
-    
-    canvas.addEventListener("touchstart", e=>{ const touch=e.touches[0]; const rect=canvas.getBoundingClientRect(); drawing=true; lastX=touch.clientX-rect.left; lastY=touch.clientY-rect.top; ctx.beginPath(); ctx.moveTo(lastX,lastY); }, {passive: false});
-    canvas.addEventListener("touchmove", e=>{ if(!drawing) return; e.preventDefault(); const touch=e.touches[0]; const rect=canvas.getBoundingClientRect(); drawLine(touch.clientX-rect.left,touch.clientY-rect.top); }, {passive: false});
-    canvas.addEventListener("touchend", () => drawing=false);
-    canvas.addEventListener("touchcancel", () => drawing=false);
-    
-    function clearCanvas(){ ctx.clearRect(0,0,canvas.width,canvas.height); totalLength=0; document.getElementById("result").innerText=""; }
-    
-    const successAudio = new Audio('button-37a.mp3'); 
-    const failAudio = new Audio('beep-03.mp3'); 
-    function playSuccessSound(){ successAudio.currentTime=0; successAudio.play().catch(e=>console.log("Playback failed:", e)); }
-    function playFailSound(){ failAudio.currentTime=0; failAudio.play().catch(e=>console.log("Playback failed:", e)); }
-    
-    function checkWriting(){
-        const result=document.getElementById("result");
-        if(totalLength > 1000){
-            result.innerHTML="Well done! 🎉";
-            result.style.color="green";
-            playSuccessSound();
+
+    window.addEventListener('resize', resizeCanvas);
+    setTimeout(resizeCanvas, 100);
+
+    function getCoordinates(e) {
+        const rect = canvas.getBoundingClientRect();
+        if (e.touches && e.touches.length > 0) {
+            return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
         } else {
-            result.innerHTML="Try again 😢";
-            result.style.color="red";
-            playFailSound();
+            return { x: e.clientX - rect.left, y: e.clientY - rect.top };
         }
     }
+
+    function startDrawing(e) {
+        isDrawing = true;
+        const coords = getCoordinates(e);
+        lastX = coords.x;
+        lastY = coords.y;
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(lastX, lastY);
+        ctx.stroke();
+    }
+
+    function draw(e) {
+        if (!isDrawing) return;
+        e.preventDefault();
+        const coords = getCoordinates(e);
+        const currentX = coords.x;
+        const currentY = coords.y;
+        const dx = currentX - lastX;
+        const dy = currentY - lastY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance > 0.1) {
+            totalDrawnLength += distance;
+            ctx.lineTo(currentX, currentY);
+            ctx.stroke();
+            lastX = currentX;
+            lastY = currentY;
+        }
+    }
+
+    function stopDrawing() {
+        isDrawing = false;
+        ctx.beginPath();
+    }
+
+    canvas.addEventListener("mousedown", startDrawing);
+    canvas.addEventListener("mousemove", draw);
+    canvas.addEventListener("mouseup", stopDrawing);
+    canvas.addEventListener("mouseout", stopDrawing);
+
+    canvas.addEventListener("touchstart", startDrawing, { passive: false });
+    canvas.addEventListener("touchmove", draw, { passive: false });
+    canvas.addEventListener("touchend", stopDrawing);
+    canvas.addEventListener("touchcancel", stopDrawing);
+
+    const successSound = new Audio('button-37a.mp3');
+    const failSound = new Audio('beep-03.mp3');
+
+    function playSound(audioElement) {
+        try {
+            audioElement.currentTime = 0;
+            audioElement.play().catch(e => console.log("無法播放音效: ", e.message));
+        } catch(e) {}
+    }
+
+    function clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        totalDrawnLength = 0;
+        resultMessage.textContent = "";
+        resultMessage.className = "";
+    }
+
+    function checkWriting() {
+        const requiredLength = 2200; // VOLLEYBALL 有 10 個字母，長度要求提高
+        const scaleFactor = canvas.width / 500;
+        const adjustedRequiredLength = requiredLength * scaleFactor;
+
+        if (totalDrawnLength > adjustedRequiredLength) {
+            resultMessage.textContent = "太棒了！書寫正確！ 🎉";
+            resultMessage.className = "success";
+            playSound(successSound);
+        } else if (totalDrawnLength === 0) {
+            resultMessage.textContent = "請先在虛線上寫字喔！";
+            resultMessage.className = "error";
+            playSound(failSound);
+        } else {
+            resultMessage.textContent = "還差一點點，請試著把每個字母寫完整 😢";
+            resultMessage.className = "error";
+            playSound(failSound);
+        }
+        console.log(`目前繪製長度: ${Math.round(totalDrawnLength)}, 需求長度: ${Math.round(adjustedRequiredLength)}`);
+    }
 </script>
+
 </body>
 </html>
