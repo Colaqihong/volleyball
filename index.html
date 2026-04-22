@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Writing Practice - Volleyball</title>
+<style>
+body { font-family: Arial, sans-serif; background: linear-gradient(to bottom, #a8e6cf, #dcedc1); text-align:center; padding:30px; margin: 0; min-height: 100vh; }
+.container { max-width:700px; margin:auto; background:#ffffffee; padding:25px; border-radius:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+h1 { margin-top: 0; color: #333; }
+.word { font-size:50px; font-weight:bold; color: #333; margin: 10px 0; }
+.trace-area { position:relative; width:420px; height:100px; margin:30px auto; background: #fff; border-radius: 10px; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); }
+.trace-guide { position:absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:56px; font-weight:bold; letter-spacing:6px; color:transparent; -webkit-text-stroke:2px #999; }
+#traceCanvas { position:absolute; top:0; left:0; width:420px; height:100px; z-index:2; border:1px dashed #ccc; border-radius: 10px; cursor: crosshair; }
+.image-box img { max-width: 200px; max-height: 200px; border-radius:12px; margin-top:10px; object-fit: cover; }
+button { padding:12px 20px; margin:10px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; font-size: 16px; transition: 0.2s; }
+button:active { transform: scale(0.95); }
+.check-btn { background:#4CAF50;color:white; }
+.clear-btn { background:#E74C3C;color:white; }
+.result { font-size:28px; margin-top:15px; height: 35px; font-weight: bold;}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Writing Practice 🏐</h1>
+    <div class="word">VOLLEYBALL</div>
+    
+    <div class="image-box">
+        <img src="Volleyball.jpg" alt="Volleyball">
+    </div>
+
+    <div class="trace-area">
+        <div class="trace-guide">VOLLEYBALL</div>
+        <canvas id="traceCanvas" width="420" height="100"></canvas>
+    </div>
+    
+    <button class="check-btn" onclick="checkWriting()">✔ Check</button>
+    <button class="clear-btn" onclick="clearCanvas()">✖ Clear</button>
+    
+    <div id="result" class="result"></div>
+</div>
+
+<script>
+    const canvas = document.getElementById("traceCanvas");
+    const ctx = canvas.getContext("2d");
+    let drawing=false, totalLength=0, lastX=0, lastY=0;
+    ctx.lineWidth=4; ctx.lineCap="round"; ctx.strokeStyle="#333";
+    
+    function drawLine(x,y){ 
+        let dx = x - lastX; 
+        let dy = y - lastY; 
+        totalLength += Math.sqrt(dx*dx + dy*dy); 
+        ctx.lineTo(x,y); 
+        ctx.stroke(); 
+        lastX = x; 
+        lastY = y; 
+    }
+    
+    canvas.addEventListener("mousedown", e=>{ drawing=true; lastX=e.offsetX; lastY=e.offsetY; ctx.beginPath(); ctx.moveTo(lastX,lastY); });
+    canvas.addEventListener("mousemove", e=>{ if(drawing) drawLine(e.offsetX,e.offsetY); });
+    canvas.addEventListener("mouseup", () => drawing=false);
+    canvas.addEventListener("mouseleave", () => drawing=false);
+    
+    canvas.addEventListener("touchstart", e=>{ const touch=e.touches[0]; const rect=canvas.getBoundingClientRect(); drawing=true; lastX=touch.clientX-rect.left; lastY=touch.clientY-rect.top; ctx.beginPath(); ctx.moveTo(lastX,lastY); }, {passive: false});
+    canvas.addEventListener("touchmove", e=>{ if(!drawing) return; e.preventDefault(); const touch=e.touches[0]; const rect=canvas.getBoundingClientRect(); drawLine(touch.clientX-rect.left,touch.clientY-rect.top); }, {passive: false});
+    canvas.addEventListener("touchend", () => drawing=false);
+    canvas.addEventListener("touchcancel", () => drawing=false);
+    
+    function clearCanvas(){ ctx.clearRect(0,0,canvas.width,canvas.height); totalLength=0; document.getElementById("result").innerText=""; }
+    
+    const successAudio = new Audio('button-37a.mp3'); 
+    const failAudio = new Audio('beep-03.mp3'); 
+    function playSuccessSound(){ successAudio.currentTime=0; successAudio.play().catch(e=>console.log("Playback failed:", e)); }
+    function playFailSound(){ failAudio.currentTime=0; failAudio.play().catch(e=>console.log("Playback failed:", e)); }
+    
+    function checkWriting(){
+        const result=document.getElementById("result");
+        if(totalLength > 2200){
+            result.innerHTML="Well done! 🎉";
+            result.style.color="green";
+            playSuccessSound();
+        } else {
+            result.innerHTML="Try again 😢";
+            result.style.color="red";
+            playFailSound();
+        }
+    }
+</script>
+</body>
+</html>
